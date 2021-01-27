@@ -50,7 +50,7 @@ Citizen.CreateThread(function()
                                 SetVehicleNumberPlateText(vehicle, plate)
                                 SetPedIntoVehicle(pPed, vehicle, -1)
                                 SetVehicleDirtLevel(vehicle, 0.1)
-                                exports.esx_legacyfuel:SetFuel(vehicle, 100.0)
+                                exports.LegacyFuel:SetFuel(vehicle, 100.0)
                             end)
 
                             ESX.UI.Menu.CloseAll()
