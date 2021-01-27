@@ -32,7 +32,7 @@ Citizen.CreateThread(function()
                 DrawText3D(v.x, v.y, v.z, "Press ~g~[E]~s~ to access the police garage.")
 
                 if IsControlJustPressed(0, 38) then
-                    if PlayerData.job and PlayerData.job.name == 'police' then
+                    if PlayerData.job and PlayerData.job.name == "police" then
                         ESX.UI.Menu.CloseAll()
 
                         for k,v in pairs(Ruq.Vehicles) do
