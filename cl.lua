@@ -1,17 +1,22 @@
 ESX = nil
-local sleep = 1000
+local PlayerData = {}
+local sleep = 2500
 
 Citizen.CreateThread(function()
-    while ESX == nil do
-        TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
-        Citizen.Wait(0)
+	while ESX == nil do
+		TriggerEvent('esx:getSharedObject', function(obj) ESX = obj end)
+		Citizen.Wait(0)
     end
+end)
 
-    while ESX.GetPlayerData() == nil do
-        Citizen.Wait(10)
-    end
+RegisterNetEvent("esx:playerLoaded")
+AddEventHandler("esx:playerLoaded", function(xPlayer)
+	PlayerData = xPlayer
+end)
 
-    PlayerData = ESX.GetPlayerData()
+RegisterNetEvent("esx:setJob")
+AddEventHandler("esx:setJob", function(job)
+	PlayerData.job = job
 end)
 
 Citizen.CreateThread(function()
@@ -27,8 +32,9 @@ Citizen.CreateThread(function()
                 DrawText3D(v.x, v.y, v.z, "Press ~g~[E]~s~ to access the police garage.")
 
                 if IsControlJustPressed(0, 38) then
-                    if ESX.PlayerData.job and ESX.PlayerData.job.name == 'police' then
+                    if PlayerData.job and PlayerData.job.name == 'police' then
                         ESX.UI.Menu.CloseAll()
+
                         for k,v in pairs(Ruq.Vehicles) do
                             table.insert(elements, {modelName = v.modelName, label = v.label})
                         end
@@ -55,6 +61,9 @@ Citizen.CreateThread(function()
                         ESX.ShowNotification("Sorry, only polices can enter the police garage.")
                     end
                 end
+            elseif dist < 10.0 then
+                sleep = 1
+                DrawMarker(20, v.x, v.y, v.z, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 50, 205, 50, 128, false, false, 2, true, nil, nil, false)
             end
         end
 
