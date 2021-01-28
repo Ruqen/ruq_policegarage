@@ -21,72 +21,70 @@ end)
 
 Citizen.CreateThread(function()
     while true do
+        local pPed = PlayerPedId()
+        local elements = {}
+        local pCoords = GetEntityCoords(pPed)
         for k,v in pairs(Ruq.Spawner) do
-            local pPed = PlayerPedId()
-            local elements = {}
-            local pCoords = GetEntityCoords(pPed)
             local dist = #(pCoords - v)
 
             if dist < 1.5 then
-                sleep = 1
-                DrawText3D(v.x, v.y, v.z, "Press ~g~[E]~s~ to access the police garage.")
+                if PlayerData.job and PlayerData.job.name == "police" then
+                    sleep = 1
+                    DrawText3D(v.x, v.y, v.z, "Press ~g~[E]~s~ to access the police garage.")
 
-                if IsControlJustPressed(0, 38) then
-                    if PlayerData.job and PlayerData.job.name == "police" then
-                        ESX.UI.Menu.CloseAll()
+                    if IsControlJustPressed(0, 38) then
+                            ESX.UI.Menu.CloseAll()
 
-                        table.insert(elements, {label = "Spawn vehicle", value = "spawnveh"})
-                        table.insert(elements, {label = "Delete vehicle", value = "deleteveh"})
-                        table.insert(elements, {label = "Close the menu", value = "close"})
+                            table.insert(elements, {label = "Spawn vehicle", value = "spawnveh"})
+                            table.insert(elements, {label = "Delete vehicle", value = "deleteveh"})
+                            table.insert(elements, {label = "Close the menu", value = "close"})
 
-                        ESX.UI.Menu.Open("default", GetCurrentResourceName(), "select", {
-                            title = "Select an option",
-                            align = "right",
-                            elements = elements
-                        }, function(data, menu)
+                            ESX.UI.Menu.Open("default", GetCurrentResourceName(), "select", {
+                                title = "Select an option",
+                                align = "right",
+                                elements = elements
+                            }, function(data, menu)
 
-                            if data.current.value == "spawnveh" then
-                                print("gay1")
-                                elements = {}
-                                print("setelements")
-                                for k,v in pairs(Ruq.Vehicles) do
-                                    table.insert(elements, {modelName = v.modelName, label = v.label})
+                                if data.current.value == "spawnveh" then
+                                    print("gay1")
+                                    elements = {}
+                                    print("setelements")
+                                    for k,v in pairs(Ruq.Vehicles) do
+                                        table.insert(elements, {modelName = v.modelName, label = v.label})
+                                    end
+
+                                    ESX.UI.Menu.Open("default", GetCurrentResourceName(), "spawnveh", {
+                                        title = "Select a vehicle to spawn",
+                                        align = "right",
+                                        elements = elements
+                                    }, function(data1, menu1)
+
+                                    ESX.Game.SpawnVehicle(data1.current.modelName, vector3(454.6, -1017.4, 28.4), 100.0, function(vehicle)
+                                        local plate = exports.esx_vehicleshop:GeneratePlate()
+                                        SetVehicleNumberPlateText(vehicle, plate)
+                                        SetPedIntoVehicle(pPed, vehicle, -1)
+                                        SetVehicleDirtLevel(vehicle, 0.1)
+                                        exports.LegacyFuel:SetFuel(vehicle, 100.0)
+                                    end)
+
+                                    ESX.UI.Menu.CloseAll()
+                                    end, function(data1, menu1)
+                                        menu1.close()
+                                    end)
+                                elseif data.current.value == "deleteveh" then
+                                    if IsPedInAnyVehicle(pPed, false) then
+                                        local myVeh = GetVehiclePedIsIn(pPed, false)
+                                        ESX.Game.DeleteVehicle(myVeh)
+                                        ESX.ShowNotification("Vehicle deleted successfully.")
+                                    else
+                                        ESX.ShowNotification("You are not in any vehicle.")
+                                    end
+                                elseif data.current.value == "close" then
+                                    ESX.UI.Menu.CloseAll()
                                 end
-
-                                ESX.UI.Menu.Open("default", GetCurrentResourceName(), "spawnveh", {
-                                    title = "Select a vehicle to spawn",
-                                    align = "right",
-                                    elements = elements
-                                }, function(data1, menu1)
-
-                                ESX.Game.SpawnVehicle(data1.current.modelName, vector3(454.6, -1017.4, 28.4), 100.0, function(vehicle)
-                                    local plate = exports.esx_vehicleshop:GeneratePlate()
-                                    SetVehicleNumberPlateText(vehicle, plate)
-                                    SetPedIntoVehicle(pPed, vehicle, -1)
-                                    SetVehicleDirtLevel(vehicle, 0.1)
-                                    exports.LegacyFuel:SetFuel(vehicle, 100.0)
-                                end)
-
-                                ESX.UI.Menu.CloseAll()
-                                end, function(data1, menu1)
-                                    menu1.close()
-                                end)
-                            elseif data.current.value == "deleteveh" then
-                                if IsPedInAnyVehicle(pPed, false) then
-                                    local myVeh = GetVehiclePedIsIn(pPed, false)
-                                    ESX.Game.DeleteVehicle(myVeh)
-                                    ESX.ShowNotification("Vehicle deleted successfully.")
-                                else
-                                    ESX.ShowNotification("You are not in any vehicle.")
-                                end
-                            elseif data.current.value == "close" then
-                                ESX.UI.Menu.CloseAll()
-                            end
-                        end, function(data, menu)
-                            menu.close()
-                        end)
-                    else
-                        ESX.ShowNotification("Sorry, only polices can enter the police garage.")
+                            end, function(data, menu)
+                                menu.close()
+                            end)
                     end
                 end
             elseif dist < 10.0 then
