@@ -20,9 +20,9 @@ AddEventHandler("esx:setJob", function(job)
 end)
 
 Citizen.CreateThread(function()
+    local elements = {}
     while true do
         local pPed = PlayerPedId()
-        local elements = {}
         local pCoords = GetEntityCoords(pPed)
         for k,v in pairs(Ruq.Spawner) do
             local dist = #(pCoords - v)
