@@ -1,6 +1,5 @@
 ESX = nil
 local PlayerData = {}
-local sleep = 2500
 
 Citizen.CreateThread(function()
 	while ESX == nil do
@@ -22,14 +21,15 @@ end)
 Citizen.CreateThread(function()
     local elements = {}
     while true do
+	local sleep = 2500		
         local pPed = PlayerPedId()
         local pCoords = GetEntityCoords(pPed)
         for k,v in pairs(Ruq.Spawner) do
             local dist = #(pCoords - v)
 
             if dist < 1.5 then
+		sleep = 1
                 if PlayerData.job and PlayerData.job.name == "police" then
-                    sleep = 1
                     DrawText3D(v.x, v.y, v.z, "Press ~g~[E]~s~ to access the police garage.")
 
                     if IsControlJustPressed(0, 38) then
